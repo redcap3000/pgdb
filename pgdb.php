@@ -116,7 +116,7 @@ class pgdb
 
 
 
-$test = new pg_db('your db', 'postgres user', 'password','OPTIONAL hostname');
+$test = new pgdb('your db', 'postgres user', 'password','OPTIONAL hostname');
 
 
 ?>
