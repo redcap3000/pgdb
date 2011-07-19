@@ -41,6 +41,14 @@ class pgdb
 		pg_insert($db, $table_name, $array);
 
 	}
+	
+	function p_select($table,$array,$options=NULL){
+	// Experimental
+	// pg_select to select from a table the values in array that match ?	
+		$result = ($options == NULL ? pg_select($this->db, $table, $array) : pg_select($this->db,$table,$array,$options));
+		
+		return $result? $result:false;
+	}
 
 	function get_objects($query, $classname=NULL, $params=NULL)
 	{
@@ -77,10 +85,8 @@ class pgdb
 
 	function get_meta_data($table)
 	{
-
 		$meta = pg_meta_data($this->db, $table);
 		return is_array($meta)?$meta:NULL;
-
 	}
 
 	function get_assoc($query, $params=NULL)
@@ -113,11 +119,3 @@ class pgdb
 	}
 
 }
-
-
-
-$test = new pgdb('your db', 'postgres user', 'password','OPTIONAL hostname');
-
-
-?>
-
