@@ -1,0 +1,20 @@
+pgdb
+Ronaldo Barbachano
+http://myparse.net
+July, 2010
+
+My super simple postgres class that interfaces with  postgres php functions to 
+allow developers an object oriented interface to the postgres php function library.
+
+Methods
+==================
+***Experimental***
+put_array(tablename,associtative array, optional db resource) - pg_insert
+p_select(tablename,associtatve array, optional options) - pg_select
+
+get_objects(query,optional classname, optional parameters) - pg_fetch_object
+get_all_array(query) - pg_fetch_all
+get_table_copy(table,optional seperator, optional null value) - pg_copy_to
+get_meta_data(table) - pg_meta_data
+get_assoc(query,optional parameters) - pg_fetch_assoc -- does the same thing as get_all_array
+get_rows(query, optional parameters) - outputs all rows into single string
