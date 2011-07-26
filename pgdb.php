@@ -112,6 +112,46 @@ class pgdb
 		pg_free_result($result);
 		return $r;
 	}
+	
+	
+	function pg_2d_array_explode($column){
+	/* pass this a STRING, with arrays that hold TEXT values, this is specifically designed with table versioning in mind
+	   takes a two dimensional array inside a postgres column and converts into an array with assocititave values provided
+	   supported format specified below
+	*/
+	
+	// cleaning up output for explosion
+	
+	// remove values that may have ben stored as null
+	$column = str_replace(array(',NULL,',',NULL','NULL,'),',',$column);
+	// takes care of leftover commas if any
+	$column = str_replace(',,',',',$column);
+	// remove the curly braces except the one we explode on, }, to properly additional arrays are appended to
+	// the two dimensional array , also removing NULL if it exists (pesky... )
+	$column = str_replace(array('NULL','{{','}}','{'),'',$column);
+	// ditch quotes
+	$column = str_replace('""',' ',$column);
+	$column = str_replace('"','',$column);
+	$column = explode('}',$column);
+	// final cleanup of commas that may exist at the beggining of a row
+	
+	foreach($column as $key=>$item){
+		$column[$key] = ltrim($item,',');
+		$column[$key] = explode(',',$column[$key]);
+		foreach($column[$key] as $key_2=>$item2){
+			// this step assumes you have a => as a seperator for your key=> value pairs
+			$result_2 = explode(' => ',$item2);
+			// assign the array value
+			$column[$key][$result_2[0]] = $result_2[1];
+			// unset the old value
+			unset($column[$key][$key_2]);
+		
+			}
+		}
+		
+	return $column;
+	}	
+		
 
 	function __destruct()
 	{
