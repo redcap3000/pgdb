@@ -46,7 +46,6 @@ class pgdb
 	// Experimental
 	// pg_select to select from a table the values in array that match ?	
 		$result = ($options == NULL ? pg_select($this->db, $table, $array) : pg_select($this->db,$table,$array,$options));
-		
 		return $result? $result:false;
 	}
 
@@ -112,46 +111,57 @@ class pgdb
 		pg_free_result($result);
 		return $r;
 	}
-	
-	
-	function pg_2d_array_explode($column){
-	/* pass this a STRING, with arrays that hold TEXT values, this is specifically designed with table versioning in mind
-	   takes a two dimensional array inside a postgres column and converts into an array with assocititave values provided
-	   supported format specified below
+
+	function show_table($table){
+	// assumes you have the show_table function installed, and passed parameter (table) exists
+		$r= self::get_objects("select * from show_table('$table')");
+		return ($r?$r[0]:false);
+	}
+
+
+	function make_assoc_array($result,$row_name){
+	/*  
+	Converts a column that contains an array into object parameters provided a result set from get_objects() and the name of the column(s)
+	that conform to the standards listed below.  First define your column as a multimdensional array ex : text[][]. When creating
+	array sets structure them as such array[[parameter,value],[parameter2,value2]]
+
+	Coded /serialized string aren't used to allow for easier sorting , selection, and
+	conditional checking via SQL functions/tiggers/selections etc.
+
 	*/
-	
-	// cleaning up output for explosion
-	
-	// remove values that may have ben stored as null
-	$column = str_replace(array(',NULL,',',NULL','NULL,'),',',$column);
-	// takes care of leftover commas if any
-	$column = str_replace(',,',',',$column);
-	// remove the curly braces except the one we explode on, }, to properly additional arrays are appended to
-	// the two dimensional array , also removing NULL if it exists (pesky... )
-	$column = str_replace(array('NULL','{{','}}','{'),'',$column);
-	// ditch quotes
-	$column = str_replace('""',' ',$column);
-	$column = str_replace('"','',$column);
-	$column = explode('}',$column);
-	// final cleanup of commas that may exist at the beggining of a row
-	
-	foreach($column as $key=>$item){
-		$column[$key] = ltrim($item,',');
-		$column[$key] = explode(',',$column[$key]);
-		foreach($column[$key] as $key_2=>$item2){
-			// this step assumes you have a => as a seperator for your key=> value pairs
-			$result_2 = explode(' => ',$item2);
-			// assign the array value
-			$column[$key][$result_2[0]] = $result_2[1];
-			// unset the old value
-			unset($column[$key][$key_2]);
-		
-			}
+
+		if(strpos($row_name,',') > 0) $row_name = explode(',',$row_name);
+	        if(!is_array($row_name)){
+	                foreach($result as  $loc=>$row){
+	                        unset($options);
+	                        if($row->$row_name != '')$options[]=array_filter(explode('}',$row->$row_name));
+	                        if($options){
+	                        foreach($options as $item){
+	                                foreach($item as $opt){
+	                                        $opt = str_replace(array('"','{'),'',$opt);
+	                                        $opt = explode(',',trim($opt, ','));
+	                                        $row->$opt[0] = $opt[1];
+	                                }
+	                         unset($row->$row_name);
+	                        $result[$loc] = $row;
+	                        }
+				}
+	                }
+	        }
+	        else
+	               	foreach($row_name as $row_name2)
+        	                foreach($result as $row)
+	                                if($row->row_name2 != '')$options[]=array_filter(explode('}',$row->$row_name2));
+	        foreach($options as $item){
+	                foreach($item as $opt){
+	                        $opt = str_replace(array('"','{'),'',$opt);
+                        	$opt = explode(',',trim($opt, ','));
+                        	$output [$opt[0]] = $opt[1];
+                	}
+
+       	 	}
+	        return ($result?$result:0);
 		}
-		
-	return $column;
-	}	
-		
 
 	function __destruct()
 	{
@@ -159,3 +169,5 @@ class pgdb
 	}
 
 }
+
+?>
