@@ -1,6 +1,6 @@
 pgdb
 Ronaldo Barbachano
-http://myparse.net
+http://myparse.org
 July, 2010
 
 My super simple postgres class that interfaces with  postgres php functions to 
@@ -18,3 +18,13 @@ get_table_copy(table,optional seperator, optional null value) - pg_copy_to
 get_meta_data(table) - pg_meta_data
 get_assoc(query,optional parameters) - pg_fetch_assoc -- does the same thing as get_all_array
 get_rows(query, optional parameters) - outputs all rows into single string
+
+make_assoc_array(result set of objects,name of column with multidimensional array) - 
+
+converts row array values (in this format) 
+
+array[[parameter,value],[parameter2,value2]]
+
+ into object parameters in each row.
+
+show_table(name of table) - accesses sql function to return column information in a given table.
