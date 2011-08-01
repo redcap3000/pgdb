@@ -10,7 +10,7 @@ My super simple postgres class that interfaces with  postgres php functions
 */
 class pgdb
 {
-
+	public $db;
 	function __construct($dbname, $user, $password, $host='localhost')
 	{
 		if (!$this->db)
